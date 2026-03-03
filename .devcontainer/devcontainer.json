@@ -1,0 +1,41 @@
+{
+  "name": "skymmich",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "remoteEnv": {
+    "ANDROID_HOME": "/opt/android-sdk"
+  },
+  // Mount host USB bus so adb can reach physical devices.
+  // Requires a Linux host; on macOS/Windows see README for alternatives.
+  "runArgs": [
+    "--privileged",
+    "--volume=/dev/bus/usb:/dev/bus/usb"
+  ],
+  "initializeCommand": "mkdir -p ${localEnv:HOME}/.ssh ${localEnv:HOME}/.claude",
+  "mounts": [
+       "source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind", 
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,readonly",
+    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind"
+  ],
+  "postStartCommand": "sudo chown -R vscode:vscode /home/vscode/.claude",
+  "postCreateCommand": "./gradlew assembleDebug",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "vscjava.vscode-gradle",
+        "redhat.java",
+        "vscjava.vscode-java-debug",
+        "dbaeumer.vscode-eslint",
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-maven",
+        "vscjava.vscode-java-dependency",
+        "vscjava.vscode-java-test"
+      ]
+    }
+  }
+}

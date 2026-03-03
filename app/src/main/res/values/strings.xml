@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">skymmich</string>
+    <string name="app_subtitle">Digital Photo Frame for Immich</string>
+
+    <!-- Server section -->
+    <string name="label_server_url">Server URL</string>
+    <string name="hint_server_url">http://192.168.1.100:2283</string>
+    <string name="label_api_key">API Key</string>
+    <string name="hint_api_key">Your Immich API key</string>
+
+    <!-- Albums section -->
+    <string name="section_albums">Albums</string>
+    <string name="label_album_ids">Album IDs (comma-separated, blank = all photos)</string>
+    <string name="hint_album_ids">album-uuid-1, album-uuid-2</string>
+
+    <!-- Slideshow section -->
+    <string name="section_slideshow">Slideshow</string>
+    <string name="label_interval">Interval (seconds)</string>
+    <string name="hint_interval">30</string>
+
+    <!-- Overlays section -->
+    <string name="section_overlays">Overlays</string>
+    <string name="label_show_metadata">Show image metadata</string>
+    <string name="label_show_clock">Show clock</string>
+    <string name="label_clock_digital">Digital</string>
+    <string name="label_clock_analog">Analog</string>
+    <string name="label_clock_both">Both</string>
+    <string name="label_show_weather">Show weather</string>
+    <string name="label_weather_location">Location (city or lat,lon)</string>
+    <string name="hint_weather_location">London</string>
+    <string name="label_weather_api_key">OpenWeatherMap API key (blank = Open-Meteo)</string>
+    <string name="hint_weather_api_key">Optional — leave blank for free Open-Meteo</string>
+
+    <!-- ADB section -->
+    <string name="section_adb">ADB over Network</string>
+    <string name="label_adb_over_network">Enable ADB over network (requires root)</string>
+    <string name="label_adb_port">ADB port</string>
+    <string name="hint_adb_port">5555</string>
+
+    <!-- Actions -->
+    <string name="btn_save">Save &amp; Start</string>
+
+    <!-- Status messages -->
+    <string name="status_required">Server URL and API Key are required</string>
+    <string name="status_testing">Testing connection…</string>
+    <string name="status_connected">Connected! Starting slideshow…</string>
+    <string name="status_failed">Connection failed:\n</string>
+</resources>
