@@ -368,7 +368,10 @@ public class MainActivity extends Activity {
         if (settings.isShowWeather() && !settings.getWeatherLocation().isEmpty()) {
             weatherOverlay.setVisibility(View.VISIBLE);
             weatherController = new WeatherController(
-                    httpClient,
+                    new OkHttpClient.Builder()
+                            .connectTimeout(15, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .build(),
                     settings.getWeatherLocation(),
                     settings.getWeatherApiKey(),
                     (temp, desc) -> runOnUiThread(() -> {

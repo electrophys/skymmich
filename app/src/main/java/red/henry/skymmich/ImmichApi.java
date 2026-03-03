@@ -93,18 +93,18 @@ public class ImmichApi {
 
     private List<String> fetchAssetIdsFromAlbum(String albumId, int limit) throws IOException {
         Request request = new Request.Builder()
-                .url(serverUrl + "/api/albums/" + albumId + "/assets")
+                .url(serverUrl + "/api/albums/" + albumId)
                 .header("x-api-key", apiKey)
                 .get()
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new IOException("GET album assets failed: " + response.code());
+                throw new IOException("GET album failed: " + response.code());
             }
             String body = response.body().string();
-            // Response is a JSON array of asset objects
-            JSONArray array = new JSONArray(body);
+            JSONObject album = new JSONObject(body);
+            JSONArray array = album.getJSONArray("assets");
             List<String> ids = new ArrayList<>();
             for (int i = 0; i < array.length(); i++) {
                 JSONObject asset = array.getJSONObject(i);
