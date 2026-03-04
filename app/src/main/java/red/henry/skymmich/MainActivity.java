@@ -79,6 +79,10 @@ public class MainActivity extends Activity {
     private SlideshowController slideshow;
     private MotionWakeController motionController;
     private WeatherController weatherController;
+    private UpdateController updateController;
+    private TextView updateVersionText;
+    private TextView updateStatusText;
+    private Button btnCheckUpdate;
     private OkHttpClient httpClient;
     private GestureDetector gestureDetector;
 
@@ -114,6 +118,9 @@ public class MainActivity extends Activity {
         editAdbPort = findViewById(R.id.edit_adb_port);
         btnSave = findViewById(R.id.btn_save);
         statusText = findViewById(R.id.status_text);
+        updateVersionText = findViewById(R.id.update_version_text);
+        updateStatusText = findViewById(R.id.update_status_text);
+        btnCheckUpdate = findViewById(R.id.btn_check_update);
 
         // Overlay views
         clockOverlay = findViewById(R.id.clock_overlay);
@@ -136,6 +143,51 @@ public class MainActivity extends Activity {
                 setGroupEnabled(adbPortFields, checked));
 
         btnSave.setOnClickListener(v -> saveAndStart());
+
+        // Update controller
+        updateController = new UpdateController(
+                BuildConfig.GITHUB_REPO,
+                BuildConfig.VERSION_CODE,
+                BuildConfig.VERSION_NAME,
+                (state, message) -> {
+                    updateStatusText.setVisibility(View.VISIBLE);
+                    updateStatusText.setText(message);
+                    switch (state) {
+                        case CHECKING:
+                        case DOWNLOADING:
+                        case INSTALLING:
+                            updateStatusText.setTextColor(0xFFAAAAFF);
+                            btnCheckUpdate.setEnabled(false);
+                            break;
+                        case UP_TO_DATE:
+                            updateStatusText.setTextColor(0xFF66FF66);
+                            btnCheckUpdate.setEnabled(true);
+                            btnCheckUpdate.setText(R.string.btn_check_update);
+                            break;
+                        case UPDATE_AVAILABLE:
+                            updateStatusText.setTextColor(0xFFFFFF66);
+                            btnCheckUpdate.setEnabled(true);
+                            btnCheckUpdate.setText(R.string.btn_download_update);
+                            break;
+                        case INSTALL_COMPLETE:
+                            updateStatusText.setTextColor(0xFF66FF66);
+                            btnCheckUpdate.setEnabled(false);
+                            break;
+                        case ERROR:
+                            updateStatusText.setTextColor(0xFFFF6666);
+                            btnCheckUpdate.setEnabled(true);
+                            btnCheckUpdate.setText(R.string.btn_check_update);
+                            break;
+                    }
+                });
+
+        btnCheckUpdate.setOnClickListener(v -> {
+            if (getString(R.string.btn_download_update).equals(btnCheckUpdate.getText().toString())) {
+                updateController.downloadAndInstall();
+            } else {
+                updateController.checkForUpdate();
+            }
+        });
 
         // Swipe gesture: left = forward, right = back
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
@@ -415,6 +467,7 @@ public class MainActivity extends Activity {
         checkAdbOverNetwork.setChecked(settings.isAdbOverNetwork());
         editAdbPort.setText(String.valueOf(settings.getAdbPort()));
         setGroupEnabled(adbPortFields, settings.isAdbOverNetwork());
+        updateVersionText.setText("Current version: " + updateController.getCurrentVersionDisplay());
     }
 
     private void setGroupEnabled(View group, boolean enabled) {
@@ -496,6 +549,7 @@ public class MainActivity extends Activity {
 
     private void onNetworkReady() {
         enableAdbOverNetwork();
+        updateController.checkForUpdate();
         if (settings.isConfigured()) {
             settingsOverlay.setVisibility(View.GONE);
             hideSystemUI();

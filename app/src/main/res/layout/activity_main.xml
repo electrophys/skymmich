@@ -447,6 +447,43 @@
 
             </LinearLayout>
 
+            <!-- ── Updates ── -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="— Updates —"
+                android:textColor="#4488FF"
+                android:textSize="12sp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/update_version_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#CCCCCC"
+                android:textSize="13sp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/update_status_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#AAAAAA"
+                android:textSize="13sp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btn_check_update"
+                android:layout_width="200dp"
+                android:layout_height="40dp"
+                android:text="@string/btn_check_update"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:background="#336633"
+                android:layout_marginBottom="16dp" />
+
             <!-- Save button -->
             <Button
                 android:id="@+id/btn_save"

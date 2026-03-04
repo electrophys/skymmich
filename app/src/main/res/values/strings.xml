@@ -38,6 +38,10 @@
     <string name="label_adb_port">ADB port</string>
     <string name="hint_adb_port">5555</string>
 
+    <!-- Updates section -->
+    <string name="btn_check_update">Check for Updates</string>
+    <string name="btn_download_update">Download &amp; Install</string>
+
     <!-- Actions -->
     <string name="btn_save">Save &amp; Start</string>
 
