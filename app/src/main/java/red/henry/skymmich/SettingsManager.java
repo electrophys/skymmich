@@ -21,10 +21,15 @@ public class SettingsManager {
     private static final String KEY_WEATHER_LOCATION = "weather_location";
     private static final String KEY_ADB_OVER_NETWORK = "adb_over_network";
     private static final String KEY_ADB_PORT = "adb_port";
+    private static final String KEY_TIMEZONE = "timezone";
+    private static final String KEY_TEMP_UNITS = "temp_units";
 
     public static final String CLOCK_DIGITAL = "digital";
     public static final String CLOCK_ANALOG = "analog";
     public static final String CLOCK_BOTH = "both";
+
+    public static final String TEMP_FAHRENHEIT = "fahrenheit";
+    public static final String TEMP_CELSIUS = "celsius";
 
     private final SharedPreferences prefs;
 
@@ -138,6 +143,22 @@ public class SettingsManager {
 
     public void setAdbPort(int port) {
         prefs.edit().putInt(KEY_ADB_PORT, port).apply();
+    }
+
+    public String getTimezone() {
+        return prefs.getString(KEY_TIMEZONE, "US/Pacific");
+    }
+
+    public void setTimezone(String timezone) {
+        prefs.edit().putString(KEY_TIMEZONE, timezone).apply();
+    }
+
+    public String getTempUnits() {
+        return prefs.getString(KEY_TEMP_UNITS, TEMP_FAHRENHEIT);
+    }
+
+    public void setTempUnits(String units) {
+        prefs.edit().putString(KEY_TEMP_UNITS, units).apply();
     }
 
     public boolean isConfigured() {

@@ -116,385 +116,47 @@
     </LinearLayout>
 
     <!-- Settings overlay -->
-    <ScrollView
+    <LinearLayout
         android:id="@+id/settings_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:background="#EE000000"
         android:visibility="visible"
-        android:fillViewport="true">
+        android:padding="16dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
+        <!-- Title row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:padding="32dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
-
-            <!-- Title -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textColor="#FFFFFF"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_subtitle"
-                android:textColor="#AAAAAA"
-                android:textSize="14sp"
-                android:layout_marginBottom="24dp" />
-
-            <!-- ── Server ── -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="— Server —"
-                android:textColor="#4488FF"
-                android:textSize="12sp"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_server_url"
-                android:textColor="#CCCCCC"
-                android:textSize="13sp"
-                android:layout_marginBottom="4dp" />
-
-            <EditText
-                android:id="@+id/edit_server_url"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="@string/hint_server_url"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#666666"
-                android:background="#33FFFFFF"
-                android:padding="12dp"
-                android:textSize="15sp"
-                android:inputType="textUri"
-                android:singleLine="true"
-                android:layout_marginBottom="12dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_api_key"
-                android:textColor="#CCCCCC"
-                android:textSize="13sp"
-                android:layout_marginBottom="4dp" />
-
-            <EditText
-                android:id="@+id/edit_api_key"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="@string/hint_api_key"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#666666"
-                android:background="#33FFFFFF"
-                android:padding="12dp"
-                android:textSize="15sp"
-                android:inputType="textVisiblePassword"
-                android:singleLine="true"
-                android:layout_marginBottom="20dp" />
-
-            <!-- ── Albums ── -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="— Albums —"
-                android:textColor="#4488FF"
-                android:textSize="12sp"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_album_ids"
-                android:textColor="#CCCCCC"
-                android:textSize="13sp"
-                android:layout_marginBottom="4dp" />
-
-            <EditText
-                android:id="@+id/edit_album_ids"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="@string/hint_album_ids"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#666666"
-                android:background="#33FFFFFF"
-                android:padding="12dp"
-                android:textSize="15sp"
-                android:inputType="text"
-                android:singleLine="true"
-                android:layout_marginBottom="20dp" />
-
-            <!-- ── Slideshow ── -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="— Slideshow —"
-                android:textColor="#4488FF"
-                android:textSize="12sp"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_interval"
-                android:textColor="#CCCCCC"
-                android:textSize="13sp"
-                android:layout_marginBottom="4dp" />
-
-            <EditText
-                android:id="@+id/edit_interval"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="@string/hint_interval"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#666666"
-                android:background="#33FFFFFF"
-                android:padding="12dp"
-                android:textSize="15sp"
-                android:inputType="number"
-                android:singleLine="true"
-                android:layout_marginBottom="20dp" />
-
-            <!-- ── Overlays ── -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="— Overlays —"
-                android:textColor="#4488FF"
-                android:textSize="12sp"
-                android:layout_marginBottom="8dp" />
-
-            <!-- Metadata toggle -->
-            <CheckBox
-                android:id="@+id/check_show_metadata"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_show_metadata"
-                android:textColor="#CCCCCC"
-                android:textSize="14sp"
-                android:buttonTint="#4488FF"
-                android:layout_marginBottom="12dp" />
-
-            <!-- Clock toggle -->
-            <CheckBox
-                android:id="@+id/check_show_clock"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_show_clock"
-                android:textColor="#CCCCCC"
-                android:textSize="14sp"
-                android:buttonTint="#4488FF"
-                android:layout_marginBottom="4dp" />
-
-            <RadioGroup
-                android:id="@+id/radio_clock_style"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="12dp">
-
-                <RadioButton
-                    android:id="@+id/radio_clock_digital"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_clock_digital"
-                    android:textColor="#CCCCCC"
-                    android:buttonTint="#4488FF"
-                    android:layout_marginEnd="16dp" />
-
-                <RadioButton
-                    android:id="@+id/radio_clock_analog"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_clock_analog"
-                    android:textColor="#CCCCCC"
-                    android:buttonTint="#4488FF"
-                    android:layout_marginEnd="16dp" />
-
-                <RadioButton
-                    android:id="@+id/radio_clock_both"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_clock_both"
-                    android:textColor="#CCCCCC"
-                    android:buttonTint="#4488FF" />
-
-            </RadioGroup>
-
-            <!-- Weather toggle -->
-            <CheckBox
-                android:id="@+id/check_show_weather"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_show_weather"
-                android:textColor="#CCCCCC"
-                android:textSize="14sp"
-                android:buttonTint="#4488FF"
-                android:layout_marginBottom="4dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
 
             <LinearLayout
-                android:id="@+id/weather_fields"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="12dp">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_weather_location"
-                    android:textColor="#CCCCCC"
-                    android:textSize="13sp"
-                    android:layout_marginBottom="4dp" />
-
-                <EditText
-                    android:id="@+id/edit_weather_location"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:hint="@string/hint_weather_location"
+                    android:text="@string/app_name"
                     android:textColor="#FFFFFF"
-                    android:textColorHint="#666666"
-                    android:background="#33FFFFFF"
-                    android:padding="12dp"
-                    android:textSize="15sp"
-                    android:inputType="text"
-                    android:singleLine="true"
-                    android:layout_marginBottom="8dp" />
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_weather_api_key"
-                    android:textColor="#CCCCCC"
-                    android:textSize="13sp"
-                    android:layout_marginBottom="4dp" />
-
-                <EditText
-                    android:id="@+id/edit_weather_api_key"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:hint="@string/hint_weather_api_key"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#666666"
-                    android:background="#33FFFFFF"
-                    android:padding="12dp"
-                    android:textSize="15sp"
-                    android:inputType="textVisiblePassword"
-                    android:singleLine="true" />
+                    android:text="@string/app_subtitle"
+                    android:textColor="#AAAAAA"
+                    android:textSize="12sp" />
 
             </LinearLayout>
-
-            <!-- ── ADB over Network ── -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="— ADB over Network —"
-                android:textColor="#4488FF"
-                android:textSize="12sp"
-                android:layout_marginBottom="8dp" />
-
-            <CheckBox
-                android:id="@+id/check_adb_over_network"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_adb_over_network"
-                android:textColor="#CCCCCC"
-                android:textSize="14sp"
-                android:buttonTint="#4488FF"
-                android:layout_marginBottom="4dp" />
-
-            <LinearLayout
-                android:id="@+id/adb_port_fields"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_adb_port"
-                    android:textColor="#CCCCCC"
-                    android:textSize="13sp"
-                    android:layout_marginBottom="4dp" />
-
-                <EditText
-                    android:id="@+id/edit_adb_port"
-                    android:layout_width="120dp"
-                    android:layout_height="48dp"
-                    android:hint="@string/hint_adb_port"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#666666"
-                    android:background="#33FFFFFF"
-                    android:padding="12dp"
-                    android:textSize="15sp"
-                    android:inputType="number"
-                    android:singleLine="true" />
-
-            </LinearLayout>
-
-            <!-- ── Updates ── -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="— Updates —"
-                android:textColor="#4488FF"
-                android:textSize="12sp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp" />
-
-            <TextView
-                android:id="@+id/update_version_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#CCCCCC"
-                android:textSize="13sp"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:id="@+id/update_status_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#AAAAAA"
-                android:textSize="13sp"
-                android:layout_marginBottom="8dp"
-                android:visibility="gone" />
-
-            <Button
-                android:id="@+id/btn_check_update"
-                android:layout_width="200dp"
-                android:layout_height="40dp"
-                android:text="@string/btn_check_update"
-                android:textColor="#FFFFFF"
-                android:textSize="13sp"
-                android:background="#336633"
-                android:layout_marginBottom="16dp" />
-
-            <!-- Save button -->
-            <Button
-                android:id="@+id/btn_save"
-                android:layout_width="200dp"
-                android:layout_height="48dp"
-                android:text="@string/btn_save"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:background="#4488FF"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="12dp" />
 
             <TextView
                 android:id="@+id/status_text"
@@ -503,9 +165,466 @@
                 android:text=""
                 android:textColor="#FF6666"
                 android:textSize="13sp"
-                android:layout_marginTop="8dp" />
+                android:layout_marginEnd="12dp" />
+
+            <Button
+                android:id="@+id/btn_close"
+                android:layout_width="100dp"
+                android:layout_height="36dp"
+                android:text="@string/btn_close"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:background="#666666"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="120dp"
+                android:layout_height="36dp"
+                android:text="@string/btn_save"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:background="#4488FF" />
 
         </LinearLayout>
-    </ScrollView>
+
+        <!-- Two-column body -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <!-- Left column: Server, Albums, Slideshow, Timezone -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginEnd="12dp">
+
+                <!-- Server -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="— Server —"
+                    android:textColor="#4488FF"
+                    android:textSize="11sp"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_server_url"
+                    android:textColor="#CCCCCC"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="2dp" />
+
+                <EditText
+                    android:id="@+id/edit_server_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:hint="@string/hint_server_url"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#666666"
+                    android:background="#33FFFFFF"
+                    android:padding="8dp"
+                    android:textSize="13sp"
+                    android:inputType="textUri"
+                    android:singleLine="true"
+                    android:layout_marginBottom="6dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_api_key"
+                    android:textColor="#CCCCCC"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="2dp" />
+
+                <EditText
+                    android:id="@+id/edit_api_key"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:hint="@string/hint_api_key"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#666666"
+                    android:background="#33FFFFFF"
+                    android:padding="8dp"
+                    android:textSize="13sp"
+                    android:inputType="textVisiblePassword"
+                    android:singleLine="true"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Albums -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="— Albums —"
+                    android:textColor="#4488FF"
+                    android:textSize="11sp"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_album_ids"
+                    android:textColor="#CCCCCC"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="2dp" />
+
+                <EditText
+                    android:id="@+id/edit_album_ids"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:hint="@string/hint_album_ids"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#666666"
+                    android:background="#33FFFFFF"
+                    android:padding="8dp"
+                    android:textSize="13sp"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Slideshow -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="— Slideshow —"
+                    android:textColor="#4488FF"
+                    android:textSize="11sp"
+                    android:layout_marginBottom="4dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_interval"
+                        android:textColor="#CCCCCC"
+                        android:textSize="12sp"
+                        android:layout_marginEnd="8dp" />
+
+                    <EditText
+                        android:id="@+id/edit_interval"
+                        android:layout_width="80dp"
+                        android:layout_height="36dp"
+                        android:hint="@string/hint_interval"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#666666"
+                        android:background="#33FFFFFF"
+                        android:padding="8dp"
+                        android:textSize="13sp"
+                        android:inputType="number"
+                        android:singleLine="true" />
+
+                </LinearLayout>
+
+                <!-- Timezone -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="— Timezone —"
+                    android:textColor="#4488FF"
+                    android:textSize="11sp"
+                    android:layout_marginBottom="4dp" />
+
+                <EditText
+                    android:id="@+id/edit_timezone"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:hint="@string/hint_timezone"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#666666"
+                    android:background="#33FFFFFF"
+                    android:padding="8dp"
+                    android:textSize="13sp"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- ADB -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="— ADB over Network —"
+                    android:textColor="#4488FF"
+                    android:textSize="11sp"
+                    android:layout_marginBottom="4dp" />
+
+                <CheckBox
+                    android:id="@+id/check_adb_over_network"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_adb_over_network"
+                    android:textColor="#CCCCCC"
+                    android:textSize="12sp"
+                    android:buttonTint="#4488FF"
+                    android:layout_marginBottom="2dp" />
+
+                <LinearLayout
+                    android:id="@+id/adb_port_fields"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_adb_port"
+                        android:textColor="#CCCCCC"
+                        android:textSize="12sp"
+                        android:layout_marginEnd="8dp" />
+
+                    <EditText
+                        android:id="@+id/edit_adb_port"
+                        android:layout_width="80dp"
+                        android:layout_height="36dp"
+                        android:hint="@string/hint_adb_port"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#666666"
+                        android:background="#33FFFFFF"
+                        android:padding="8dp"
+                        android:textSize="13sp"
+                        android:inputType="number"
+                        android:singleLine="true" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Right column: Overlays, Weather, Temp units, Updates -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <!-- Overlays -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="— Overlays —"
+                    android:textColor="#4488FF"
+                    android:textSize="11sp"
+                    android:layout_marginBottom="4dp" />
+
+                <CheckBox
+                    android:id="@+id/check_show_metadata"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_show_metadata"
+                    android:textColor="#CCCCCC"
+                    android:textSize="12sp"
+                    android:buttonTint="#4488FF"
+                    android:layout_marginBottom="4dp" />
+
+                <CheckBox
+                    android:id="@+id/check_show_clock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_show_clock"
+                    android:textColor="#CCCCCC"
+                    android:textSize="12sp"
+                    android:buttonTint="#4488FF"
+                    android:layout_marginBottom="2dp" />
+
+                <RadioGroup
+                    android:id="@+id/radio_clock_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="4dp">
+
+                    <RadioButton
+                        android:id="@+id/radio_clock_digital"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_clock_digital"
+                        android:textColor="#CCCCCC"
+                        android:textSize="12sp"
+                        android:buttonTint="#4488FF"
+                        android:layout_marginEnd="12dp" />
+
+                    <RadioButton
+                        android:id="@+id/radio_clock_analog"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_clock_analog"
+                        android:textColor="#CCCCCC"
+                        android:textSize="12sp"
+                        android:buttonTint="#4488FF"
+                        android:layout_marginEnd="12dp" />
+
+                    <RadioButton
+                        android:id="@+id/radio_clock_both"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_clock_both"
+                        android:textColor="#CCCCCC"
+                        android:textSize="12sp"
+                        android:buttonTint="#4488FF" />
+
+                </RadioGroup>
+
+                <!-- Weather -->
+                <CheckBox
+                    android:id="@+id/check_show_weather"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_show_weather"
+                    android:textColor="#CCCCCC"
+                    android:textSize="12sp"
+                    android:buttonTint="#4488FF"
+                    android:layout_marginBottom="2dp" />
+
+                <LinearLayout
+                    android:id="@+id/weather_fields"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_weather_location"
+                        android:textColor="#CCCCCC"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="2dp" />
+
+                    <EditText
+                        android:id="@+id/edit_weather_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:hint="@string/hint_weather_location"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#666666"
+                        android:background="#33FFFFFF"
+                        android:padding="8dp"
+                        android:textSize="13sp"
+                        android:inputType="text"
+                        android:singleLine="true"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_weather_api_key"
+                        android:textColor="#CCCCCC"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="2dp" />
+
+                    <EditText
+                        android:id="@+id/edit_weather_api_key"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:hint="@string/hint_weather_api_key"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#666666"
+                        android:background="#33FFFFFF"
+                        android:padding="8dp"
+                        android:textSize="13sp"
+                        android:inputType="textVisiblePassword"
+                        android:singleLine="true" />
+
+                </LinearLayout>
+
+                <!-- Temperature units -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_temp_units"
+                        android:textColor="#CCCCCC"
+                        android:textSize="12sp"
+                        android:layout_marginEnd="8dp" />
+
+                    <RadioGroup
+                        android:id="@+id/radio_temp_units"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/radio_temp_fahrenheit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_temp_fahrenheit"
+                            android:textColor="#CCCCCC"
+                            android:textSize="12sp"
+                            android:buttonTint="#4488FF"
+                            android:layout_marginEnd="12dp" />
+
+                        <RadioButton
+                            android:id="@+id/radio_temp_celsius"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_temp_celsius"
+                            android:textColor="#CCCCCC"
+                            android:textSize="12sp"
+                            android:buttonTint="#4488FF" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <!-- Updates -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="— Updates —"
+                    android:textColor="#4488FF"
+                    android:textSize="11sp"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/update_version_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#CCCCCC"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/update_status_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#AAAAAA"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="4dp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btn_check_update"
+                    android:layout_width="180dp"
+                    android:layout_height="36dp"
+                    android:text="@string/btn_check_update"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:background="#336633" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </FrameLayout>

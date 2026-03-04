@@ -9,9 +9,11 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 public class AnalogClockView extends View {
 
+    private TimeZone timeZone = TimeZone.getDefault();
     private final Paint dialPaint;
     private final Paint hourPaint;
     private final Paint minutePaint;
@@ -75,6 +77,11 @@ public class AnalogClockView extends View {
         handler.removeCallbacks(tickRunnable);
     }
 
+    public void setTimeZone(String tz) {
+        this.timeZone = TimeZone.getTimeZone(tz);
+        invalidate();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -98,7 +105,7 @@ public class AnalogClockView extends View {
                     dialPaint);
         }
 
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance(timeZone);
         int hour = cal.get(Calendar.HOUR);
         int minute = cal.get(Calendar.MINUTE);
         int second = cal.get(Calendar.SECOND);

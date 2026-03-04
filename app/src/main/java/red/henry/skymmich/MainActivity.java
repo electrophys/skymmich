@@ -58,10 +58,13 @@ public class MainActivity extends Activity {
     private LinearLayout weatherFields;
     private EditText editWeatherLocation;
     private EditText editWeatherApiKey;
+    private EditText editTimezone;
+    private RadioGroup radioTempUnits;
     private CheckBox checkAdbOverNetwork;
     private LinearLayout adbPortFields;
     private EditText editAdbPort;
     private Button btnSave;
+    private Button btnClose;
     private TextView statusText;
 
     // Overlays
@@ -113,10 +116,13 @@ public class MainActivity extends Activity {
         weatherFields = findViewById(R.id.weather_fields);
         editWeatherLocation = findViewById(R.id.edit_weather_location);
         editWeatherApiKey = findViewById(R.id.edit_weather_api_key);
+        editTimezone = findViewById(R.id.edit_timezone);
+        radioTempUnits = findViewById(R.id.radio_temp_units);
         checkAdbOverNetwork = findViewById(R.id.check_adb_over_network);
         adbPortFields = findViewById(R.id.adb_port_fields);
         editAdbPort = findViewById(R.id.edit_adb_port);
         btnSave = findViewById(R.id.btn_save);
+        btnClose = findViewById(R.id.btn_close);
         statusText = findViewById(R.id.status_text);
         updateVersionText = findViewById(R.id.update_version_text);
         updateStatusText = findViewById(R.id.update_status_text);
@@ -143,6 +149,10 @@ public class MainActivity extends Activity {
                 setGroupEnabled(adbPortFields, checked));
 
         btnSave.setOnClickListener(v -> saveAndStart());
+        btnClose.setOnClickListener(v -> {
+            settingsOverlay.setVisibility(View.GONE);
+            hideSystemUI();
+        });
 
         // Update controller
         updateController = new UpdateController(
@@ -274,6 +284,8 @@ public class MainActivity extends Activity {
         settings.setShowWeather(checkShowWeather.isChecked());
         settings.setWeatherLocation(editWeatherLocation.getText().toString().trim());
         settings.setWeatherApiKey(editWeatherApiKey.getText().toString().trim());
+        settings.setTimezone(editTimezone.getText().toString().trim());
+        settings.setTempUnits(selectedTempUnits());
         settings.setAdbOverNetwork(checkAdbOverNetwork.isChecked());
         int adbPort = 5555;
         try {
@@ -315,6 +327,12 @@ public class MainActivity extends Activity {
         if (id == R.id.radio_clock_analog) return SettingsManager.CLOCK_ANALOG;
         if (id == R.id.radio_clock_both) return SettingsManager.CLOCK_BOTH;
         return SettingsManager.CLOCK_DIGITAL;
+    }
+
+    private String selectedTempUnits() {
+        int id = radioTempUnits.getCheckedRadioButtonId();
+        if (id == R.id.radio_temp_celsius) return SettingsManager.TEMP_CELSIUS;
+        return SettingsManager.TEMP_FAHRENHEIT;
     }
 
     private void initAndStartSlideshow() {
@@ -400,6 +418,10 @@ public class MainActivity extends Activity {
         // Clock
         if (settings.isShowClock()) {
             clockOverlay.setVisibility(View.VISIBLE);
+            String tz = settings.getTimezone();
+            clockDigitalTime.setTimeZone(tz);
+            clockDigitalDate.setTimeZone(tz);
+            clockAnalog.setTimeZone(tz);
             String style = settings.getClockStyle();
             boolean showDigital = !SettingsManager.CLOCK_ANALOG.equals(style);
             boolean showAnalog = !SettingsManager.CLOCK_DIGITAL.equals(style);
@@ -426,6 +448,7 @@ public class MainActivity extends Activity {
                             .build(),
                     settings.getWeatherLocation(),
                     settings.getWeatherApiKey(),
+                    settings.getTempUnits(),
                     (temp, desc) -> runOnUiThread(() -> {
                         weatherTemp.setText(temp);
                         weatherDesc.setText(desc);
@@ -464,6 +487,12 @@ public class MainActivity extends Activity {
         editWeatherLocation.setText(settings.getWeatherLocation());
         editWeatherApiKey.setText(settings.getWeatherApiKey());
         setGroupEnabled(weatherFields, settings.isShowWeather());
+        editTimezone.setText(settings.getTimezone());
+        if (SettingsManager.TEMP_CELSIUS.equals(settings.getTempUnits())) {
+            ((RadioButton) findViewById(R.id.radio_temp_celsius)).setChecked(true);
+        } else {
+            ((RadioButton) findViewById(R.id.radio_temp_fahrenheit)).setChecked(true);
+        }
         checkAdbOverNetwork.setChecked(settings.isAdbOverNetwork());
         editAdbPort.setText(String.valueOf(settings.getAdbPort()));
         setGroupEnabled(adbPortFields, settings.isAdbOverNetwork());

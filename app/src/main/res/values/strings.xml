@@ -31,6 +31,11 @@
     <string name="hint_weather_location">London</string>
     <string name="label_weather_api_key">OpenWeatherMap API key (blank = Open-Meteo)</string>
     <string name="hint_weather_api_key">Optional — leave blank for free Open-Meteo</string>
+    <string name="label_timezone">Timezone</string>
+    <string name="hint_timezone">US/Pacific</string>
+    <string name="label_temp_units">Temperature units</string>
+    <string name="label_temp_fahrenheit">°F</string>
+    <string name="label_temp_celsius">°C</string>
 
     <!-- ADB section -->
     <string name="section_adb">ADB over Network</string>
@@ -43,6 +48,7 @@
     <string name="btn_download_update">Download &amp; Install</string>
 
     <!-- Actions -->
+    <string name="btn_close">Close</string>
     <string name="btn_save">Save &amp; Start</string>
 
     <!-- Status messages -->

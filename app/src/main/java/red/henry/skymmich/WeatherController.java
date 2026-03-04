@@ -35,15 +35,18 @@ public class WeatherController {
     private final OkHttpClient client;
     private final String location;
     private final String apiKey;
+    private final String tempUnits;
     private final WeatherCallback callback;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private ScheduledExecutorService scheduler;
 
     public WeatherController(OkHttpClient client, String location,
-                             String apiKey, WeatherCallback callback) {
+                             String apiKey, String tempUnits,
+                             WeatherCallback callback) {
         this.client = client;
         this.location = location.trim();
         this.apiKey = apiKey != null ? apiKey.trim() : "";
+        this.tempUnits = tempUnits != null ? tempUnits : "fahrenheit";
         this.callback = callback;
     }
 
@@ -99,7 +102,7 @@ public class WeatherController {
                 + "?latitude=" + lat
                 + "&longitude=" + lon
                 + "&current=temperature_2m,weather_code"
-                + "&temperature_unit=celsius";
+                + "&temperature_unit=" + ("celsius".equals(tempUnits) ? "celsius" : "fahrenheit");
 
         Request request = new Request.Builder().url(url).get().build();
         try (Response response = client.newCall(request).execute()) {
@@ -111,7 +114,7 @@ public class WeatherController {
             JSONObject current = root.getJSONObject("current");
             double temp = current.getDouble("temperature_2m");
             int code = current.getInt("weather_code");
-            String tempStr = Math.round(temp) + "°C";
+            String tempStr = Math.round(temp) + ("celsius".equals(tempUnits) ? "°C" : "°F");
             String desc = wmoDescription(code);
             deliver(tempStr, desc);
         }
@@ -156,7 +159,7 @@ public class WeatherController {
                 : "q=" + java.net.URLEncoder.encode(location, "UTF-8");
 
         String url = "https://api.openweathermap.org/data/2.5/weather?"
-                + query + "&appid=" + apiKey + "&units=metric";
+                + query + "&appid=" + apiKey + "&units=" + ("celsius".equals(tempUnits) ? "metric" : "imperial");
 
         Request request = new Request.Builder().url(url).get().build();
         try (Response response = client.newCall(request).execute()) {
@@ -172,7 +175,7 @@ public class WeatherController {
             if (!desc.isEmpty()) {
                 desc = Character.toUpperCase(desc.charAt(0)) + desc.substring(1);
             }
-            deliver(Math.round(temp) + "°C", desc);
+            deliver(Math.round(temp) + ("celsius".equals(tempUnits) ? "°C" : "°F"), desc);
         }
     }
 
