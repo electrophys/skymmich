@@ -7,6 +7,8 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.content.Context;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,7 +28,7 @@ public class UpdateController {
 
     private static final String TAG = "UpdateController";
     private static final String GITHUB_API = "https://api.github.com";
-    private static final String APK_PATH = "/data/local/tmp/skymmich-update.apk";
+    private static final String APK_FILENAME = "skymmich-update.apk";
 
     public enum State {
         IDLE, CHECKING, UP_TO_DATE, UPDATE_AVAILABLE,
@@ -43,15 +45,18 @@ public class UpdateController {
     private final Callback callback;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final OkHttpClient httpClient;
+    private final File apkFile;
 
     private String latestApkUrl;
     private String latestReleaseName;
 
     public UpdateController(String githubRepo, int currentVersionCode,
-                            String currentVersionName, Callback callback) {
+                            String currentVersionName, Context context,
+                            Callback callback) {
         this.githubRepo = githubRepo;
         this.currentVersionCode = currentVersionCode;
         this.currentVersionName = currentVersionName;
+        this.apkFile = new File(context.getCacheDir(), APK_FILENAME);
         this.callback = callback;
         this.httpClient = new OkHttpClient.Builder()
                 .connectTimeout(15, TimeUnit.SECONDS)
@@ -132,7 +137,6 @@ public class UpdateController {
                         return;
                     }
 
-                    File apkFile = new File(APK_PATH);
                     try (InputStream in = response.body().byteStream();
                          FileOutputStream out = new FileOutputStream(apkFile)) {
                         byte[] buf = new byte[8192];
@@ -141,7 +145,8 @@ public class UpdateController {
                             out.write(buf, 0, n);
                         }
                     }
-                    Log.d(TAG, "Downloaded " + apkFile.length() + " bytes to " + APK_PATH);
+                    apkFile.setReadable(true, false);
+                    Log.d(TAG, "Downloaded " + apkFile.length() + " bytes to " + apkFile.getAbsolutePath());
                 }
 
                 postState(State.INSTALLING, "Installing update…");
@@ -158,7 +163,7 @@ public class UpdateController {
         try {
             Process p = Runtime.getRuntime().exec("su");
             java.io.OutputStream os = p.getOutputStream();
-            os.write(("pm install -r " + APK_PATH + "\nexit\n").getBytes());
+            os.write(("pm install -r " + apkFile.getAbsolutePath() + "\nexit\n").getBytes());
             os.flush();
             os.close();
 
@@ -173,7 +178,7 @@ public class UpdateController {
             Log.d(TAG, "pm install exit=" + exit + " output: " + output);
 
             if (exit == 0 && output.toString().contains("Success")) {
-                new File(APK_PATH).delete();
+                apkFile.delete();
                 postState(State.INSTALL_COMPLETE, "Update installed! Restarting…");
                 // pm install -r on Android 7 kills and restarts the app.
                 // Safety net: force-start after 2s if it doesn't auto-restart.

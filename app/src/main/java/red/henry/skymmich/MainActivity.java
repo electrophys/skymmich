@@ -159,6 +159,7 @@ public class MainActivity extends Activity {
                 BuildConfig.GITHUB_REPO,
                 BuildConfig.VERSION_CODE,
                 BuildConfig.VERSION_NAME,
+                this,
                 (state, message) -> {
                     updateStatusText.setVisibility(View.VISIBLE);
                     updateStatusText.setText(message);
