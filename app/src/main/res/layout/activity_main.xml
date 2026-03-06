@@ -122,7 +122,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="#EE000000"
-        android:visibility="visible"
+        android:visibility="gone"
         android:padding="16dp"
         android:focusable="true"
         android:focusableInTouchMode="true">

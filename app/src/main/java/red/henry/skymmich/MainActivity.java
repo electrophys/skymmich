@@ -560,11 +560,21 @@ public class MainActivity extends Activity {
     }
 
     private void deployEthUpScript() {
-        try (InputStream in = getResources().openRawResource(R.raw.eth_up);
-             FileOutputStream out = new FileOutputStream("/data/local/tmp/eth_up.sh")) {
-            byte[] buf = new byte[4096];
-            int n;
-            while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
+        try {
+            File tmp = new File(getCacheDir(), "eth_up.sh");
+            try (InputStream in = getResources().openRawResource(R.raw.eth_up);
+                 FileOutputStream out = new FileOutputStream(tmp)) {
+                byte[] buf = new byte[4096];
+                int n;
+                while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
+            }
+            Process p = Runtime.getRuntime().exec("su");
+            java.io.OutputStream os = p.getOutputStream();
+            os.write(("cp " + tmp.getAbsolutePath() + " /data/local/tmp/eth_up.sh\n"
+                    + "chmod 755 /data/local/tmp/eth_up.sh\nexit\n").getBytes());
+            os.flush();
+            os.close();
+            p.waitFor();
             Log.d("MainActivity", "eth_up.sh deployed");
         } catch (Exception e) {
             Log.w("MainActivity", "Failed to deploy eth_up.sh: " + e.getMessage());
