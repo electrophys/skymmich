@@ -20,7 +20,9 @@ import android.widget.TextClock;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.NetworkInterface;
 import java.util.Collections;
@@ -523,6 +525,9 @@ public class MainActivity extends Activity {
                     return;
                 }
 
+                // Always extract the bundled script so it stays in sync with the app.
+                deployEthUpScript();
+
                 // Launch eth_up.sh asynchronously — don't block waiting for it to finish.
                 // The script handles ADB setup at the end; we poll for the IP independently.
                 Log.d("MainActivity", "No network, launching eth_up.sh");
@@ -553,6 +558,18 @@ public class MainActivity extends Activity {
                 runOnUiThread(this::onNetworkReady);
             }
         }).start();
+    }
+
+    private void deployEthUpScript() {
+        try (InputStream in = getResources().openRawResource(R.raw.eth_up);
+             FileOutputStream out = new FileOutputStream("/data/local/tmp/eth_up.sh")) {
+            byte[] buf = new byte[4096];
+            int n;
+            while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
+            Log.d("MainActivity", "eth_up.sh deployed");
+        } catch (Exception e) {
+            Log.w("MainActivity", "Failed to deploy eth_up.sh: " + e.getMessage());
+        }
     }
 
     private boolean hasNetworkInterface() {
