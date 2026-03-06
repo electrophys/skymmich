@@ -602,8 +602,7 @@ public class MainActivity extends Activity {
                 java.io.OutputStream os = p.getOutputStream();
                 os.write(("setprop persist.adb.tcp.port " + port + "\n"
                         + "setprop service.adb.tcp.port " + port + "\n"
-                        + "setprop ctl.stop adbd\n"
-                        + "setprop ctl.start adbd\n"
+                        + "killall adbd 2>/dev/null; /sbin/adbd &\n"
                         + "exit\n").getBytes());
                 os.flush();
                 os.close();

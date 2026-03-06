@@ -2,7 +2,7 @@
 # Bring up USB Ethernet (RTL8152) and enable ADB over TCP
 # Lives at /data/local/tmp/eth_up.sh on the device
 
-# Set ADB TCP port before USB mode switch so init picks it up on adbd restart
+# Set ADB TCP port before USB mode switch
 setprop persist.adb.tcp.port 5555
 setprop service.adb.tcp.port 5555
 setprop sys.usb.config none
@@ -21,7 +21,8 @@ while [ $i -lt 60 ]; do
         ndc network default set 100
         setprop net.dns1 192.168.86.1
         setprop net.dns2 8.8.8.8
-        setprop ctl.start adbd
+        killall adbd 2>/dev/null
+        /sbin/adbd &
         break
     fi
     sleep 1
