@@ -18,9 +18,9 @@ while [ $i -lt 60 ]; do
         ndc network default set 100
         setprop net.dns1 192.168.86.1
         setprop net.dns2 8.8.8.8
+        setprop persist.adb.tcp.port 5555
         setprop service.adb.tcp.port 5555
-        stop adbd
-        start adbd
+        kill $(pidof adbd)
         break
     fi
     sleep 1
