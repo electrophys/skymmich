@@ -516,6 +516,9 @@ public class MainActivity extends Activity {
     private void bringUpNetwork() {
         new Thread(() -> {
             try {
+                // Always deploy so the script stays in sync after OTA updates.
+                deployEthUpScript();
+
                 if (hasNetworkInterface()) {
                     Log.d("MainActivity", "Network already up");
                     runOnUiThread(() -> {
@@ -525,11 +528,7 @@ public class MainActivity extends Activity {
                     return;
                 }
 
-                // Always extract the bundled script so it stays in sync with the app.
-                deployEthUpScript();
-
-                // Launch eth_up.sh asynchronously — don't block waiting for it to finish.
-                // The script handles ADB setup at the end; we poll for the IP independently.
+                // Launch eth_up.sh asynchronously — poll for IP independently.
                 Log.d("MainActivity", "No network, launching eth_up.sh");
                 Process p = Runtime.getRuntime().exec("su");
                 java.io.OutputStream os = p.getOutputStream();
