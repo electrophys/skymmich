@@ -21,8 +21,9 @@ while [ $i -lt 60 ]; do
         ndc network default set 100
         setprop net.dns1 192.168.86.1
         setprop net.dns2 8.8.8.8
-        killall adbd 2>/dev/null
-        /sbin/adbd &
+        if [ -f /sbin/adbd ]; then /sbin/adbd &
+        elif [ -f /system/bin/adbd ]; then /system/bin/adbd &
+        fi
         break
     fi
     sleep 1

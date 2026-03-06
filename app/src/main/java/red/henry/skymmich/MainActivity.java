@@ -593,21 +593,35 @@ public class MainActivity extends Activity {
         }).start();
     }
 
+    private Process adbdProcess;
+
     private void enableAdbOverNetwork() {
         if (!settings.isAdbOverNetwork()) return;
         int port = settings.getAdbPort();
         new Thread(() -> {
             try {
+                // Find adbd binary
+                String adbd = null;
+                for (String path : new String[]{"/sbin/adbd", "/system/bin/adbd"}) {
+                    if (new File(path).exists()) { adbd = path; break; }
+                }
+                if (adbd == null) {
+                    Log.w("MainActivity", "adbd binary not found");
+                    return;
+                }
+                // Set properties then exec adbd directly — replaces the shell so adbd
+                // isn't killed by SIGHUP when the shell exits. Keep Process alive.
                 Process p = Runtime.getRuntime().exec("su");
                 java.io.OutputStream os = p.getOutputStream();
                 os.write(("setprop persist.adb.tcp.port " + port + "\n"
                         + "setprop service.adb.tcp.port " + port + "\n"
-                        + "killall adbd 2>/dev/null; /sbin/adbd &\n"
-                        + "exit\n").getBytes());
+                        + "exec " + adbd + "\n").getBytes());
                 os.flush();
                 os.close();
-                p.waitFor();
-                Log.d("MainActivity", "ADB over network enabled on port " + port);
+                adbdProcess = p;
+                drainStream(p.getInputStream());
+                drainStream(p.getErrorStream());
+                Log.d("MainActivity", "adbd started via exec " + adbd + " on port " + port);
             } catch (Exception e) {
                 Log.w("MainActivity", "Failed to enable ADB over network: " + e.getMessage());
             }
