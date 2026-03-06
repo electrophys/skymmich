@@ -14,6 +14,7 @@ import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +22,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class SlideshowController {
 
@@ -41,6 +46,8 @@ public class SlideshowController {
     private final ImageView frontImage;
     private final ImageView backImage;
     private final ImmichApi api;
+    private final OkHttpClient httpClient;
+    private final PhotoCache photoCache;
     private final Handler handler;
     private final ExecutorService executor;
     private final ErrorCallback errorCallback;
@@ -59,10 +66,13 @@ public class SlideshowController {
     private final Runnable advanceRunnable = this::advance;
 
     public SlideshowController(ImageView frontImage, ImageView backImage,
-                                ImmichApi api, ErrorCallback errorCallback) {
+                                ImmichApi api, OkHttpClient httpClient,
+                                PhotoCache photoCache, ErrorCallback errorCallback) {
         this.frontImage = frontImage;
         this.backImage = backImage;
         this.api = api;
+        this.httpClient = httpClient;
+        this.photoCache = photoCache;
         this.handler = new Handler(Looper.getMainLooper());
         this.executor = Executors.newSingleThreadExecutor();
         this.errorCallback = errorCallback;
@@ -99,14 +109,14 @@ public class SlideshowController {
     /** Navigate one step back in history. */
     public void goBack() {
         if (!running) return;
-        if (history.size() <= 1) return; // nothing to go back to
+        if (history.size() <= 1) return;
         int maxBack = history.size() - 1;
         if (historyPos >= maxBack) return;
         historyPos++;
         handler.removeCallbacks(advanceRunnable);
         String assetId = getHistoryAsset();
         Log.d(TAG, "goBack historyPos=" + historyPos + " assetId=" + assetId);
-        loadAndCrossfade(api.getPreviewUrl(assetId), assetId);
+        showAsset(assetId);
         handler.postDelayed(advanceRunnable, intervalMs);
     }
 
@@ -122,7 +132,7 @@ public class SlideshowController {
             } else {
                 String assetId = getHistoryAsset();
                 Log.d(TAG, "goForward historyPos=" + historyPos + " assetId=" + assetId);
-                loadAndCrossfade(api.getPreviewUrl(assetId), assetId);
+                showAsset(assetId);
                 handler.postDelayed(advanceRunnable, intervalMs);
             }
         } else {
@@ -153,13 +163,49 @@ public class SlideshowController {
 
         String assetId = queue.remove(0);
         pushHistory(assetId);
-        loadAndCrossfade(api.getPreviewUrl(assetId), assetId);
+        showAsset(assetId);
     }
 
     private void pushHistory(String assetId) {
         history.addLast(assetId);
         if (history.size() > MAX_HISTORY) {
             history.removeFirst();
+        }
+    }
+
+    /** Resolve assetId to a local File (from cache or downloaded), then crossfade on main thread. */
+    private void showAsset(String assetId) {
+        final ImageView loadTarget = frontVisible ? backImage : frontImage;
+        final ImageView fadeOut = frontVisible ? frontImage : backImage;
+
+        executor.execute(() -> {
+            try {
+                File imageFile = resolveToFile(assetId);
+                handler.post(() -> crossfade(loadTarget, fadeOut, imageFile, assetId));
+            } catch (IOException e) {
+                Log.w(TAG, "Failed to resolve asset " + assetId + ": " + e.getMessage());
+                if (running) {
+                    handler.postDelayed(advanceRunnable, 1000);
+                }
+            }
+        });
+    }
+
+    /** Returns a local File for assetId, downloading and caching if not already cached. */
+    private File resolveToFile(String assetId) throws IOException {
+        if (photoCache.has(assetId)) {
+            photoCache.touch(assetId);
+            return photoCache.fileFor(assetId);
+        }
+
+        Request request = new Request.Builder()
+                .url(api.getPreviewUrl(assetId))
+                .build();
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) throw new IOException("HTTP " + response.code());
+            byte[] bytes = response.body().bytes();
+            photoCache.put(assetId, bytes);
+            return photoCache.fileFor(assetId);
         }
     }
 
@@ -176,23 +222,33 @@ public class SlideshowController {
                     }
                 });
             } catch (IOException e) {
-                Log.e(TAG, "Failed to refill queue", e);
-                handler.post(() -> {
-                    if (errorCallback != null) {
-                        errorCallback.onError("Failed to load photos: " + e.getMessage());
-                    }
-                });
+                Log.e(TAG, "Offline — falling back to photo cache", e);
+                List<String> cachedIds = photoCache.getCachedIds();
+                if (!cachedIds.isEmpty()) {
+                    Collections.shuffle(cachedIds);
+                    handler.post(() -> {
+                        queue.addAll(cachedIds);
+                        Log.d(TAG, "Offline queue from cache, size=" + queue.size());
+                        if (running) {
+                            handler.removeCallbacks(advanceRunnable);
+                            advance();
+                        }
+                    });
+                } else {
+                    handler.post(() -> {
+                        if (errorCallback != null) {
+                            errorCallback.onError("Offline and no cached photos available");
+                        }
+                    });
+                }
             }
         });
     }
 
-    private void loadAndCrossfade(String url, String assetId) {
-        ImageView loadTarget = frontVisible ? backImage : frontImage;
-        ImageView fadeOut = frontVisible ? frontImage : backImage;
-
+    private void crossfade(ImageView loadTarget, ImageView fadeOut, File imageFile, String assetId) {
         Glide.with(loadTarget.getContext())
                 .asBitmap()
-                .load(url)
+                .load(imageFile)
                 .format(DecodeFormat.PREFER_RGB_565)
                 .override(1280, 800)
                 .into(new CustomTarget<Bitmap>() {
@@ -213,7 +269,6 @@ public class SlideshowController {
                                         fadeOut.setAlpha(0f);
                                         frontVisible = !frontVisible;
 
-                                        // Fetch metadata in background after image is shown
                                         if (metadataCallback != null && assetId != null) {
                                             fetchMetadata(assetId);
                                         }
@@ -228,7 +283,7 @@ public class SlideshowController {
 
                     @Override
                     public void onLoadFailed(Drawable errorDrawable) {
-                        Log.w(TAG, "Failed to load image: " + url);
+                        Log.w(TAG, "Failed to load image from file: " + imageFile);
                         if (running) {
                             handler.postDelayed(advanceRunnable, 1000);
                         }

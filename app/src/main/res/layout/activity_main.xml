@@ -115,6 +115,38 @@
 
     </LinearLayout>
 
+    <!-- Touch hint overlay -->
+    <FrameLayout
+        android:id="@+id/hint_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <!-- Swipe hint: centered -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="← Swipe to navigate →"
+            android:textColor="#CCFFFFFF"
+            android:textSize="22sp"
+            android:background="#66000000"
+            android:padding="12dp" />
+
+        <!-- Settings hint: bottom-right corner -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:text="Tap here for settings"
+            android:textColor="#CCFFFFFF"
+            android:textSize="16sp"
+            android:background="#66000000"
+            android:padding="10dp" />
+
+    </FrameLayout>
+
     <!-- Settings overlay -->
     <LinearLayout
         android:id="@+id/settings_overlay"
@@ -252,7 +284,7 @@
                     android:background="#33FFFFFF"
                     android:padding="8dp"
                     android:textSize="13sp"
-                    android:inputType="textVisiblePassword"
+                    android:inputType="textPassword"
                     android:singleLine="true"
                     android:layout_marginBottom="8dp" />
 
@@ -536,7 +568,7 @@
                         android:background="#33FFFFFF"
                         android:padding="8dp"
                         android:textSize="13sp"
-                        android:inputType="textVisiblePassword"
+                        android:inputType="textPassword"
                         android:singleLine="true" />
 
                 </LinearLayout>

@@ -46,6 +46,9 @@ public class MainActivity extends Activity {
     private ImageView imageFront;
     private ImageView imageBack;
     private View settingsOverlay;
+    private View hintOverlay;
+    private final android.os.Handler hintHandler = new android.os.Handler();
+    private final Runnable hideHint = () -> hintOverlay.setVisibility(View.GONE);
     private EditText editServerUrl;
     private EditText editApiKey;
     private EditText editInterval;
@@ -101,6 +104,8 @@ public class MainActivity extends Activity {
         // Slideshow views
         imageFront = findViewById(R.id.image_front);
         imageBack = findViewById(R.id.image_back);
+
+        hintOverlay = findViewById(R.id.hint_overlay);
 
         // Settings overlay views
         settingsOverlay = findViewById(R.id.settings_overlay);
@@ -233,8 +238,13 @@ public class MainActivity extends Activity {
                 float w = rootView.getWidth();
                 float h = rootView.getHeight();
                 if (x >= w - cornerPx && y >= h - cornerPx) {
+                    hintHandler.removeCallbacks(hideHint);
+                    hintOverlay.setVisibility(View.GONE);
                     toggleSettings();
                     return true;
+                }
+                if (settingsOverlay.getVisibility() != View.VISIBLE) {
+                    showHint();
                 }
             }
             return true;
@@ -381,7 +391,8 @@ public class MainActivity extends Activity {
     private void startSlideshow(int intervalSeconds) {
         if (slideshow != null) slideshow.stop();
 
-        slideshow = new SlideshowController(imageFront, imageBack, api,
+        slideshow = new SlideshowController(imageFront, imageBack, api, httpClient,
+                new PhotoCache(this),
                 message -> runOnUiThread(() -> {
                     statusText.setText(message);
                     statusText.setTextColor(0xFFFF6666);
@@ -571,7 +582,9 @@ public class MainActivity extends Activity {
             Process p = Runtime.getRuntime().exec("su");
             java.io.OutputStream os = p.getOutputStream();
             os.write(("cp " + tmp.getAbsolutePath() + " /data/local/tmp/eth_up.sh\n"
-                    + "chmod 755 /data/local/tmp/eth_up.sh\nexit\n").getBytes());
+                    + "chmod 755 /data/local/tmp/eth_up.sh\n"
+                    + "touch /data/local/tmp/eth_up.log\n"
+                    + "chmod 666 /data/local/tmp/eth_up.log\nexit\n").getBytes());
             os.flush();
             os.close();
             p.waitFor();
@@ -650,70 +663,30 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void showHint() {
+        hintOverlay.setVisibility(View.VISIBLE);
+        hintHandler.removeCallbacks(hideHint);
+        hintHandler.postDelayed(hideHint, 5000);
+    }
+
     private void showDiagnostics() {
         new Thread(() -> {
-            StringBuilder diag = new StringBuilder();
+            String ip = "No network";
             try {
+                outer:
                 for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                    if (ni.isUp() && !ni.isLoopback()) {
-                        diag.append("IF: ").append(ni.getName());
-                        java.util.List<java.net.InetAddress> addrs = Collections.list(ni.getInetAddresses());
-                        for (java.net.InetAddress a : addrs) {
-                            if (a instanceof java.net.Inet4Address) diag.append(" ").append(a.getHostAddress());
-                        }
-                        diag.append("\n");
-                    }
-                }
-            } catch (Exception e) {
-                diag.append("Interfaces: error\n");
-            }
-            if (diag.length() == 0) {
-                diag.append("No active network interfaces!\n");
-            } else if (settings.isAdbOverNetwork()) {
-                // Extract first IPv4 to show the connect command
-                try {
-                    outer:
-                    for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                        if (!ni.isUp() || ni.isLoopback()) continue;
-                        for (java.net.InetAddress addr : Collections.list(ni.getInetAddresses())) {
-                            if (addr instanceof java.net.Inet4Address && !addr.isLoopbackAddress()) {
-                                diag.append("ADB: adb connect ")
-                                        .append(addr.getHostAddress())
-                                        .append(":").append(settings.getAdbPort()).append("\n");
-                                break outer;
-                            }
+                    if (!ni.isUp() || ni.isLoopback()) continue;
+                    for (java.net.InetAddress addr : Collections.list(ni.getInetAddresses())) {
+                        if (addr instanceof java.net.Inet4Address && !addr.isLoopbackAddress()) {
+                            ip = ni.getName() + " " + addr.getHostAddress();
+                            break outer;
                         }
                     }
-                } catch (Exception ignored) {}
-            }
-
-            try {
-                Process p = Runtime.getRuntime().exec(new String[]{"getprop", "net.dns1"});
-                BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                String dns1 = br.readLine();
-                diag.append("DNS1: ").append(dns1 != null ? dns1 : "(empty)").append("\n");
-                br.close();
-            } catch (Exception e) {
-                diag.append("DNS1: error\n");
-            }
-
-            try {
-                File log = new File("/data/local/tmp/eth_up.log");
-                if (log.exists()) {
-                    BufferedReader br = new BufferedReader(new FileReader(log));
-                    String line;
-                    diag.append("\n-- eth_up.log --\n");
-                    while ((line = br.readLine()) != null) diag.append(line).append("\n");
-                    br.close();
-                } else {
-                    diag.append("\nNo eth_up.log\n");
                 }
-            } catch (Exception e) {
-                diag.append("\neth_up.log: ").append(e.getMessage()).append("\n");
-            }
-
+            } catch (Exception ignored) {}
+            final String display = ip;
             runOnUiThread(() -> {
-                statusText.setText(diag.toString());
+                statusText.setText(display);
                 statusText.setTextColor(0xFFAAAAFF);
             });
         }).start();

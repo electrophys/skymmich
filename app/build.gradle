@@ -8,8 +8,8 @@ android {
         applicationId "red.henry.skymmich"
         minSdkVersion 25
         targetSdkVersion 25
-        versionCode 12
-        versionName "2.1"
+        versionCode 13
+        versionName "3.0"
         buildConfigField "String", "GITHUB_REPO", "\"electrophys/skymmich\""
         ndk {
             abiFilters 'armeabi-v7a'
