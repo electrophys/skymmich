@@ -600,9 +600,10 @@ public class MainActivity extends Activity {
             try {
                 Process p = Runtime.getRuntime().exec("su");
                 java.io.OutputStream os = p.getOutputStream();
-                os.write(("setprop service.adb.tcp.port " + port + "\n"
-                        + "stop adbd\n"
-                        + "start adbd\n"
+                os.write(("setprop persist.adb.tcp.port " + port + "\n"
+                        + "setprop service.adb.tcp.port " + port + "\n"
+                        + "setprop ctl.stop adbd\n"
+                        + "setprop ctl.start adbd\n"
                         + "exit\n").getBytes());
                 os.flush();
                 os.close();
