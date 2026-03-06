@@ -514,45 +514,66 @@ public class MainActivity extends Activity {
     private void bringUpNetwork() {
         new Thread(() -> {
             try {
-                boolean hasNetwork = false;
-                for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                    if (!ni.isUp() || ni.isLoopback()) continue;
-                    // Check for an assigned IPv4 address — works for WiFi, Ethernet, USB-RNDIS, etc.
-                    for (java.net.InetAddress addr : Collections.list(ni.getInetAddresses())) {
-                        if (addr instanceof java.net.Inet4Address && !addr.isLoopbackAddress()) {
-                            hasNetwork = true;
-                            break;
-                        }
-                    }
-                    if (hasNetwork) break;
-                }
-                if (hasNetwork) {
+                if (hasNetworkInterface()) {
                     Log.d("MainActivity", "Network already up");
-                    runOnUiThread(this::onNetworkReady);
+                    runOnUiThread(() -> {
+                        enableAdbOverNetwork();
+                        onNetworkReady();
+                    });
                     return;
                 }
 
-                Log.d("MainActivity", "No network, running eth_up.sh via su");
+                // Launch eth_up.sh asynchronously — don't block waiting for it to finish.
+                // The script handles ADB setup at the end; we poll for the IP independently.
+                Log.d("MainActivity", "No network, launching eth_up.sh");
                 Process p = Runtime.getRuntime().exec("su");
                 java.io.OutputStream os = p.getOutputStream();
                 os.write("sh /data/local/tmp/eth_up.sh\nexit\n".getBytes());
                 os.flush();
                 os.close();
-                BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                BufferedReader er = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-                StringBuilder output = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) output.append(line).append("\n");
-                while ((line = er.readLine()) != null) output.append("ERR: ").append(line).append("\n");
-                int exit = p.waitFor();
-                output.append("exit=").append(exit).append("\n");
-                Log.d("MainActivity", "eth_up.sh output: " + output);
+                // Drain stdout/stderr so the pipe never blocks the script
+                drainStream(p.getInputStream());
+                drainStream(p.getErrorStream());
 
+                // Poll for IP — fires onNetworkReady as soon as DHCP completes,
+                // before the script's ADB setup runs (that's fine, it completes shortly after).
+                for (int i = 0; i < 240; i++) {
+                    Thread.sleep(250);
+                    if (hasNetworkInterface()) {
+                        Log.d("MainActivity", "Network up after ~" + (i * 250 / 1000.0) + "s");
+                        runOnUiThread(this::onNetworkReady);
+                        return;
+                    }
+                }
+
+                Log.w("MainActivity", "Network timeout after 60s, continuing anyway");
                 runOnUiThread(this::onNetworkReady);
             } catch (Exception e) {
                 Log.e("MainActivity", "bringUpNetwork failed", e);
                 runOnUiThread(this::onNetworkReady);
             }
+        }).start();
+    }
+
+    private boolean hasNetworkInterface() {
+        try {
+            for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                if (!ni.isUp() || ni.isLoopback()) continue;
+                for (java.net.InetAddress addr : Collections.list(ni.getInetAddresses())) {
+                    if (addr instanceof java.net.Inet4Address && !addr.isLoopbackAddress())
+                        return true;
+                }
+            }
+        } catch (Exception e) {
+            Log.w("MainActivity", "hasNetworkInterface error: " + e.getMessage());
+        }
+        return false;
+    }
+
+    private void drainStream(java.io.InputStream is) {
+        new Thread(() -> {
+            try { byte[] buf = new byte[1024]; while (is.read(buf) != -1) {} }
+            catch (Exception ignored) {}
         }).start();
     }
 
@@ -578,7 +599,6 @@ public class MainActivity extends Activity {
     }
 
     private void onNetworkReady() {
-        enableAdbOverNetwork();
         updateController.checkForUpdate();
         if (settings.isConfigured()) {
             settingsOverlay.setVisibility(View.GONE);
